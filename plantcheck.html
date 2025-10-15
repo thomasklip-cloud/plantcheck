@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plant Foto Upload</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        h2 {
+            color: #4CAF50;
+        }
+        #response {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            background-color: #f4f4f4;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <h2>Upload een foto van je plant</h2>
+    <form id="uploadForm" enctype="multipart/form-data">
+        <label for="file">Kies een bestand (foto):</label>
+        <input type="file" name="file" accept="image/*" capture="camera" required><br><br>
+        <button type="submit">Uploaden</button>
+    </form>
+
+    <div id="response"></div>
+
+    <script>
+    // Functie om het formulier te verwerken
+    document.getElementById('uploadForm').addEventListener('submit', async function(e) {
+        e.preventDefault(); // Voorkom standaard form submit
+
+        // FormData object om de foto en data te versturen
+        const formData = new FormData(e.target);
+
+        // De URL van de n8n webhook
+        const webhookUrl = 'https://n8n66429.hostkey.in/webhook-test/4884acb3-7d2c-4eef-bda5-a79860ac527d'; 
+        
+        try {
+            // Verstuur het bestand naar de n8n webhook
+            const response = await fetch(webhookUrl, {
+                method: 'POST',
+                body: formData
+            });
+
+            // Controleer of de upload succesvol was
+            if (response.ok) {
+                // Haal het antwoord van de webhook op (verwacht tekstuele reactie)
+                const result = await response.text();
+                
+                // Toon de reactie op de pagina
+                const responseDiv = document.getElementById('response');
+                responseDiv.style.display = 'block'; // Maak het zichtbaar
+                responseDiv.innerHTML = `Antwoord van de AI: <br><strong>${result}</strong>`;
+            } else {
+                alert('Er is een fout opgetreden bij het uploaden van de foto.');
+            }
+        } catch (error) {
+            console.error('Fout bij het uploaden:', error);
+            alert('Er is een netwerkfout opgetreden.');
+        }
+    });
+    </script>
+</body>
+</html>
